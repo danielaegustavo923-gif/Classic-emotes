@@ -1,0 +1,254 @@
+--[[
+	WARNING: Heads up! This script has not been verified by ScriptBlox. Use at your own risk!
+]]
+-- Classic emote Hub Beta
+-- Made by Scripterblabla don't steal it
+-- only 20% help by Ai and 80% I made trust it brosky🥀
+
+
+local player = game.Players.LocalPlayer
+local char = player.Character or player.CharacterAdded:Wait()
+wait(1)
+
+local hum = char:WaitForChild("Humanoid", 15)
+if not hum then print("No Humanoid - reset or rejoin") return end
+
+local root = char:WaitForChild("HumanoidRootPart")
+
+-- Reanim didn't need Netless LoL NOT AI 
+for _, p in pairs(char:GetChildren()) do
+    if p:IsA("BasePart") and p.Name ~= "HumanoidRootPart" then p.CanCollide = false end
+end
+hum.PlatformStand = true
+wait(0.1)
+hum.PlatformStand = false
+
+local animator = hum:FindFirstChild("Animator") or Instance.new("Animator", hum)
+
+-- Function to stop all default anims briefly
+local function stopDefaults()
+    for _, track in pairs(animator:GetPlayingAnimationTracks()) do
+        if track.Priority == Enum.AnimationPriority.Core or track.Priority == Enum.AnimationPriority.Idle then
+            track:Stop(0)
+        end
+    end
+end
+
+-- Emotes (swapped sleep to faint for better fall/collapse)
+local emoteData = {
+    wave = {id = "rbxassetid://128777973", loop = false},
+    point = {id = "rbxassetid://128853357", loop = false},
+    cheer = {id = "rbxassetid://129423030", loop = false},
+    laugh = {id = "rbxassetid://129423131", loop = false},
+    dance = {id = "rbxassetid://182435998", loop = true},
+    dance2 = {id = "rbxassetid://182436842", loop = true},
+    dance3 = {id = "rbxassetid://182436935", loop = true},
+    faint = {id = "rbxassetid://181526230", loop = false},  -- Better "sleep/fall" collapse
+    levitate = {id = "rbxassetid://313762630", loop = true},
+    sit = {id = "rbxassetid://178130996", loop = true},     -- Chill sit as alt
+    stance = {id = "rbxassetid://1018553897", loop = true},
+    spin = {id = "rbxassetid://188632011", loop = true},
+    movingdance = {id = "rbxassetid://429703734", loop = true}
+}
+
+local tracks = {}
+for name, data in pairs(emoteData) do
+    local a = Instance.new("Animation")
+    a.AnimationId = data.id
+    local t = animator:LoadAnimation(a)
+    t.Priority = Enum.AnimationPriority.Action4  -- Max to override defaults
+    t.Looped = data.loop
+    tracks[name] = t
+    print("Loaded: " .. name)
+end
+
+-- SKIBIDI LOL
+local sg = Instance.new("ScreenGui")
+sg.Name = "ScripterblablaEmote"
+sg.ResetOnSpawn = false
+sg.Enabled = true
+sg.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+sg.Parent = player:WaitForChild("PlayerGui")
+wait(1)
+sg.Enabled = true
+
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 340, 0, 420)
+frame.Position = UDim2.new(0.5, -170, 0.5, -210)
+frame.BackgroundColor3 = Color3.fromRGB(20, 10, 40)
+frame.ZIndex = 999
+frame.Parent = sg
+Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 16)
+
+local grad = Instance.new("UIGradient")
+grad.Color = ColorSequence.new{
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(60,0,120)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(20,0,60))
+}
+grad.Parent = frame
+
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1,0,0,50)
+title.BackgroundTransparency = 1
+title.Text = "Classic Emotes R6"
+title.TextColor3 = Color3.fromRGB(200,120,255)
+title.TextSize = 28
+title.Font = Enum.Font.GothamBlack
+title.ZIndex = 1000
+title.Parent = frame
+
+local close = Instance.new("TextButton")
+close.Size = UDim2.new(0,30,0,30)
+close.Position = UDim2.new(1,-35,0,10)
+close.BackgroundColor3 = Color3.fromRGB(180,50,50)
+close.Text = "X"
+close.TextColor3 = Color3.new(1,1,1)
+close.ZIndex = 1001
+close.Parent = frame
+Instance.new("UICorner", close).CornerRadius = UDim.new(0,8)
+close.MouseButton1Click:Connect(function() sg:Destroy() end)
+
+-- LOL NOT AI
+local scroll = Instance.new("ScrollingFrame")
+scroll.Size = UDim2.new(1, -20, 1, -80)
+scroll.Position = UDim2.new(0,10,0,70)
+scroll.BackgroundTransparency = 1
+scroll.ScrollBarThickness = 8
+scroll.CanvasSize = UDim2.new(0,0,0,0)
+scroll.ZIndex = 1000
+scroll.Parent = frame
+
+local list = Instance.new("UIListLayout")
+list.Padding = UDim.new(0,12)
+list.SortOrder = Enum.SortOrder.LayoutOrder
+list.Parent = scroll
+
+-- GUGUGAGA
+local uis = game:GetService("UserInputService")
+local dragging, dragStart, startPos
+frame.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = true
+        dragStart = input.Position
+        startPos = frame.Position
+    end
+end)
+frame.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = false
+    end
+end)
+uis.InputChanged:Connect(function(input)
+    if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+        local delta = input.Position - dragStart
+        frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
+end)
+
+-- SIGMA?
+local function addBtn(name, key, trackName)
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(1,-20,0,50)
+    btn.BackgroundColor3 = Color3.fromRGB(100,0,200)
+    btn.Text = name .. " (" .. key .. ")"
+    btn.TextColor3 = Color3.new(1,1,1)
+    btn.Font = Enum.Font.GothamSemibold
+    btn.TextSize = 20
+    btn.ZIndex = 1001
+    btn.Parent = scroll
+    Instance.new("UICorner", btn).CornerRadius = UDim.new(0,12)
+
+    btn.MouseEnter:Connect(function() btn.BackgroundColor3 = Color3.fromRGB(160,0,255) end)
+    btn.MouseLeave:Connect(function() btn.BackgroundColor3 = Color3.fromRGB(100,0,200) end)
+
+    btn.MouseButton1Click:Connect(function()
+        local tr = tracks[trackName]
+        if tr then
+            stopDefaults()  -- Help override
+            if tr.Looped and tr.IsPlaying then
+                tr:Stop(0.3)
+            else
+                tr:Play(0.2, 1, 1.1)
+            end
+        end
+    end)
+
+    scroll.CanvasSize = UDim2.new(0,0,0,list.AbsoluteContentSize.Y + 40)
+end
+
+addBtn("Wave", "Q", "wave")
+addBtn("Point", "E", "point")
+addBtn("Cheer", "R", "cheer")
+addBtn("Laugh", "G", "laugh")
+addBtn("Dance", "T", "dance")
+addBtn("Dance2", "Y", "dance2")
+addBtn("Dance3", "U", "dance3")
+addBtn("Faint (Better Sleep)", "Z", "faint")
+addBtn("Levitate", "L", "levitate")
+addBtn("Sit", "C", "sit")
+addBtn("Stance", "F", "stance")
+addBtn("Spin", "P", "spin")
+addBtn("Moving Dance", "M", "movingdance")
+
+--This ain't AI
+local stopAll = Instance.new("TextButton")
+stopAll.Size = UDim2.new(0.8,0,0,50)
+stopAll.Position = UDim2.new(0.1,0,1,-65)
+stopAll.BackgroundColor3 = Color3.fromRGB(200,50,50)
+stopAll.Text = "STOP EMOTE"
+stopAll.TextColor3 = Color3.new(1,1,1)
+stopAll.Font = Enum.Font.GothamBold
+stopAll.TextSize = 22
+stopAll.ZIndex = 1001
+stopAll.Parent = frame
+Instance.new("UICorner", stopAll).CornerRadius = UDim.new(0,12)
+stopAll.MouseButton1Click:Connect(function()
+    for _, t in pairs(tracks) do t:Stop(0.3) end
+    print("All GOOD")
+end)
+
+-- Particles
+local debris = game:GetService("Debris")
+local function burst()
+    local r = char:FindFirstChild("HumanoidRootPart") or char:FindFirstChild("Torso")
+    if r then
+        local a = Instance.new("Attachment", r)
+        local p = Instance.new("ParticleEmitter")
+        p.Texture = "rbxassetid://243660364"
+        p.Color = ColorSequence.new(Color3.fromRGB(180,100,255))
+        p.Lifetime = NumberRange.new(0.7,1.3)
+        p.Rate = 80
+        p.Speed = NumberRange.new(10,18)
+        p:Emit(40)
+        p.Parent = a
+        debris:AddItem(a, 2)
+    end
+end
+
+for _, t in pairs(tracks) do
+    t:GetPropertyChangedSignal("IsPlaying"):Connect(function()
+        if t.IsPlaying then burst() end
+    end)
+end
+
+-- UR SIGMA Scripterblabla
+local uis = game:GetService("UserInputService")
+uis.InputBegan:Connect(function(i, p)
+    if p then return end
+    local k = i.KeyCode
+    if k == Enum.KeyCode.Q then tracks.wave:Play(0.2,1,1.2) end
+    if k == Enum.KeyCode.E then tracks.point:Play(0.2,1,1.1) end
+    if k == Enum.KeyCode.R then local t=tracks.cheer if t.IsPlaying then t:Stop() else t:Play() end end
+    if k == Enum.KeyCode.G then tracks.laugh:Play(0.1,1,1.3) end
+    if k == Enum.KeyCode.T then local t=tracks.dance if t.IsPlaying then t:Stop() else t:Play() end end
+    if k == Enum.KeyCode.Y then local t=tracks.dance2 if t.IsPlaying then t:Stop() else t:Play() end end
+    if k == Enum.KeyCode.U then local t=tracks.dance3 if t.IsPlaying then t:Stop() else t:Play() end end
+    if k == Enum.KeyCode.Z then tracks.faint:Play(0.2,1,1) end
+    if k == Enum.KeyCode.L then local t=tracks.levitate if t.IsPlaying then t:Stop() else t:Play(0.2,1,0.8) end end
+    if k == Enum.KeyCode.C then local t=tracks.sit if t.IsPlaying then t:Stop() else t:Play() end end
+    if k == Enum.KeyCode.F then local t=tracks.stance stopDefaults() if t.IsPlaying then t:Stop(0.3) else t:Play(0.3,1,0.9) end end
+    if k == Enum.KeyCode.P then local t=tracks.spin if t.IsPlaying then t:Stop() else t:Play(0.2,1,1.5) end end
+    if k == Enum.KeyCode.M then local t=tracks.movingdance if t.IsPlaying then t:Stop() else t:Play() end end
+end)
+
+print("CLASSIC EMOTE NEVER FAIL,This not Ai")
